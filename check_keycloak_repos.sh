@@ -1,5 +1,8 @@
 #!/bin/bash
 
+GITLAB_TOKEN="glpat-iHuevLsAqjBtOKv3Kh7WNW86MQp1OmF4CA.01.0y1ah4wbu"
+GITLAB_URL="https://gl.webmonitorx.ru"
+
 # Проверка наличия необходимых переменных окружения
 if [ -z "$GITLAB_URL" ] || [ -z "$GITLAB_TOKEN" ]; then
     echo "Ошибка: Необходимо установить переменные окружения GITLAB_URL и GITLAB_TOKEN"
