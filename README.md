@@ -98,11 +98,13 @@ The script `search_keycloak_repos.sh` does the following:
 3. Looks for files with extensions like `.yml`, `.yaml`, `.json`, `.js`, `.ts`, `.java`, `.properties`, `.xml`, `.env`, `.conf`, `.config`
 4. Also searches files with names containing `config`, `application`, `settings`, `auth`, `security`, `keycloak`, `oauth`, `sso`
 5. Checks file contents for Keycloak-related keywords like `keycloak`, `auth-server-url`, `realm`, `client.id`, `oidc`, `sso`, `oauth`, `openid`, etc.
-6. Outputs results in JSON format with:
+6. For each file containing Keycloak configurations, identifies the specific line numbers where matches were found
+7. Outputs results in JSON format with:
    - Project name
    - Repository URL
    - File names containing Keycloak configurations
    - URLs to the files in GitLab
+   - Line numbers in each file where Keycloak configurations were found
 
 ## Issue Encountered
 
@@ -133,10 +135,13 @@ The results will be saved in `keycloak_repos.json`.
     "project_name": "project-name",
     "repository_url": "https://gl.webmonitorx.ru/project-name",
     "keycloak_files": ["path/to/config.yml", "path/to/application.properties"],
-    "file_urls": ["https://gl.webmonitorx.ru/project-name/-/blob/main/path/to/config.yml", "https://gl.webmonitorx.ru/project-name/-/blob/main/path/to/application.properties"]
+    "file_urls": ["https://gl.webmonitorx.ru/project-name/-/blob/main/path/to/config.yml", "https://gl.webmonitorx.ru/project-name/-/blob/main/path/to/application.properties"],
+    "line_numbers": [[3, 15, 22], [7, 18]]
   }
 ]
 ```
+
+The `line_numbers` field contains an array of arrays, where each inner array corresponds to the line numbers in the respective file from `keycloak_files` where Keycloak configurations were found.
 
 ## Troubleshooting
 
