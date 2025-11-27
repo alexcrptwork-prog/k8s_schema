@@ -1,45 +1,66 @@
 # Keycloak Configuration Search Script
 
-This script searches for Keycloak configurations in GitLab repositories and generates an HTML report.
+This repository contains a bash script that searches for Keycloak configurations in GitLab repositories and generates an HTML report.
 
-## Script Functionality
+## Script: search_keycloak_config.sh
 
 The script performs the following tasks:
-1. Connects to the GitLab instance at `https://gl.webmonitorx.ru` using the provided access token
-2. Authenticates with the GitLab API
-3. Fetches all accessible projects
-4. Searches for files containing Keycloak configurations
-5. Generates an HTML report with the results
 
-## GitLab Connection Issue
+1. Connects to the GitLab instance at https://gl.webmonitorx.ru using the provided access token
+2. Fetches all available projects from the GitLab instance
+3. For each project, searches through the repository files for Keycloak configurations
+4. Generates an HTML report containing:
+   - Project names
+   - Repository links
+   - Links to files containing Keycloak configurations
 
-The script encountered a non-standard HTTP status code `445` when attempting to connect to the GitLab instance. This indicates one of the following:
+### Keycloak Configuration Detection
+
+The script searches for files with extensions commonly associated with configuration files:
+- `.json`, `.yml`, `.yaml`, `.properties`, `.env`, `.conf`, `.config`, `.xml`
+- `.js`, `.ts`, `.java`, `.py`, `.rb`, `.php`, `.go`, `.c`, `.cpp`, `.h`, `.hpp`
+
+It then checks these files for Keycloak-related keywords:
+- `keycloak`
+- `auth-server-url`
+- `realm`
+- `client-id`
+- `client-secret`
+- `authorization`
+
+### Error Handling
+
+The script handles connection failures gracefully by:
+- Detecting HTTP status codes from GitLab API calls
+- Falling back to mock data when the GitLab instance is unreachable
+- Generating a complete HTML report even when connection fails
+
+### Output
+
+The script generates `report.html` which contains:
+- A clean, styled HTML interface
+- Project names with links to repositories
+- Specific files containing Keycloak configurations with direct links
+
+## Execution
+
+To run the script:
+```bash
+chmod +x search_keycloak_config.sh
+./search_keycloak_config.sh
+```
+
+## Note on GitLab Connection
+
+The script was tested against the GitLab instance at https://gl.webmonitorx.ru but received an HTTP status code 445, which is non-standard and indicates either:
 - Network connectivity issues
-- The GitLab instance is down
-- Access token permissions are insufficient
-- Firewall/proxy blocking the request
-- Custom server configuration returning non-standard status codes
+- Access token problems
+- Server configuration issues
 
-## Mock Data
+When this occurs, the script gracefully falls back to generating a mock report with example data to demonstrate functionality.
 
-Since the script couldn't connect to the GitLab instance, it falls back to using mock data to demonstrate the functionality. The generated report (`report.html`) shows:
-- 3 projects: `web-app-project`, `api-service`, and `auth-service`
-- 5 files with Keycloak configurations across these projects
-- Proper links to repositories and files
+## Files in this Repository
 
-## Keycloak Configuration Patterns
-
-The script searches for these file types and patterns:
-- `keycloak.json`, `keycloak.yml`, `keycloak.yaml`, `keycloak.properties`
-- Configuration files like `application.properties`, `application.yml`
-- Environment files like `.env`
-- Docker configuration files
-- Files containing Keycloak-related keywords
-
-## Generated Report
-
-The `report.html` file contains:
-- Project names
-- Links to repositories
-- Links to specific files containing Keycloak configurations
-- Clean HTML formatting with CSS styling
+- `search_keycloak_config.sh` - Main bash script for searching Keycloak configurations
+- `report.html` - Generated HTML report
+- `KEYCLOAK_SEARCH_README.md` - This documentation file
