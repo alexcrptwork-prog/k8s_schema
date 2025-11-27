@@ -359,9 +359,6 @@ def main():
         print(f"{COLORS['light_gray']}TOPOLOGY BRIEFING CONCLUDED{COLORS['reset']}")
         print(f"{COLORS['light_gray']}AWAITING FURTHER ORDERS FROM COMMAND...{COLORS['reset']}")
         
-        # Wait for user input before exiting
-        input(f"{COLORS['light_gray']}> Enter to exit...{COLORS['reset']}")
-        
     except KeyboardInterrupt:
         print(f"\n{COLORS['orange']}> MISSION ABORTED BY COMMAND{COLORS['reset']}")
         sys.exit(1)
