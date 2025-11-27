@@ -70,16 +70,31 @@ for project_b64 in $projects; do
     # Also include other common files that might contain Keycloak configs
     potential_files=$(echo -e "$potential_files\n$(echo "$tree" | jq -r '.[] | select(.type == "blob") | .path' | grep -E '(config|application|settings|auth|security|keycloak|oauth|sso)' | head -20)" | grep -v '^$' | sort -u)
     
+    # Declare associative array to store line numbers for each file
+    declare -A file_line_numbers
+    
     for file_path in $potential_files; do
         # Get file content to check for Keycloak references
         encoded_path=$(echo "$file_path" | sed 's|/|%2F|g')
         file_content=$(curl -s --header "PRIVATE-TOKEN: $TOKEN" "$GITLAB_URL/api/v4/projects/$project_id/repository/files/$encoded_path/raw?ref=HEAD" 2>/dev/null)
         
         if [[ $? -eq 0 ]]; then
-            # Check if file contains Keycloak-related keywords (case insensitive)
-            if echo "$file_content" | grep -i -E -q "keycloak|auth-server-url|realm|client.*id|oidc|sso|oauth|openid|kc\.realm|keycloak\.|spring\.security|spring\.oauth2|authentication|authorization"; then
+            # Check if file contains Keycloak-related keywords (case insensitive) and get line numbers
+            matches=$(echo "$file_content" | grep -n -i -E "keycloak|auth-server-url|realm|client.*id|oidc|sso|oauth|openid|kc\.realm|keycloak\.|spring\.security|spring\.oauth2|authentication|authorization")
+            
+            if [[ -n "$matches" ]]; then
                 echo "  Found Keycloak config in: $file_path"
                 keycloak_files+=("$file_path")
+                
+                # Extract line numbers from matches
+                line_numbers=()
+                while IFS= read -r match; do
+                    line_num=$(echo "$match" | cut -d: -f1)
+                    line_numbers+=("$line_num")
+                done < <(echo "$matches")
+                
+                # Store line numbers for this file as JSON array
+                file_line_numbers["$file_path"]=$(printf '%s\n' "${line_numbers[@]}" | jq -R . | jq -s .)
             fi
         else
             # If we can't access the file content, try to access it differently
@@ -128,6 +143,20 @@ for project_b64 in $projects; do
                     echo -n "\"$file_url\"," >> "$OUTPUT_FILE"
                 else
                     echo -n "\"$file_url\"" >> "$OUTPUT_FILE"
+                fi
+            done
+            
+            echo -n "]," >> "$OUTPUT_FILE"
+            echo -n "\"line_numbers\":[" >> "$OUTPUT_FILE"
+            
+            # Add line numbers for each file
+            for i in "${!keycloak_files[@]}"; do
+                file_path="${keycloak_files[$i]}"
+                
+                if [ $i -lt $((${#keycloak_files[@]} - 1)) ]; then
+                    echo -n "${file_line_numbers[$file_path]}," >> "$OUTPUT_FILE"
+                else
+                    echo -n "${file_line_numbers[$file_path]}" >> "$OUTPUT_FILE"
                 fi
             done
             
