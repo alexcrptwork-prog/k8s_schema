@@ -84,3 +84,64 @@ Both scripts can be customized by modifying:
 ## Security Notice
 
 This tool uses `kubectl` to access your Kubernetes cluster. Ensure you have appropriate permissions and that the tool is used in accordance with your organization's security policies.
+
+# GitLab Keycloak Configuration Search Script
+
+This script is designed to search through GitLab repositories for Keycloak configuration files and save the findings in JSON format.
+
+## Script Functionality
+
+The script `search_keycloak_repos.sh` does the following:
+
+1. Uses the GitLab API to fetch all accessible projects
+2. Searches through each project's files for potential Keycloak configurations
+3. Looks for files with extensions like `.yml`, `.yaml`, `.json`, `.js`, `.ts`, `.java`, `.properties`, `.xml`, `.env`, `.conf`, `.config`
+4. Also searches files with names containing `config`, `application`, `settings`, `auth`, `security`, `keycloak`, `oauth`, `sso`
+5. Checks file contents for Keycloak-related keywords like `keycloak`, `auth-server-url`, `realm`, `client.id`, `oidc`, `sso`, `oauth`, `openid`, etc.
+6. Outputs results in JSON format with:
+   - Project name
+   - Repository URL
+   - File names containing Keycloak configurations
+   - URLs to the files in GitLab
+
+## Issue Encountered
+
+When running the script, we encountered an HTTP 445 response code from the GitLab API, which is a non-standard HTTP status code. This indicates there's an access issue with the provided token or GitLab instance configuration.
+
+Possible reasons:
+- The token `glpat-iHuevLsAqjBtOKv3Kh7WNW86MQp1OmF4CA.01.0y1ah4wbu` may be invalid or expired
+- The GitLab instance at `https://gl.webmonitorx.ru` may have special access restrictions
+- Network connectivity issues
+- The token may not have sufficient permissions to access the projects
+
+## Usage
+
+To use this script with a working GitLab token:
+
+```bash
+chmod +x search_keycloak_repos.sh
+./search_keycloak_repos.sh
+```
+
+The results will be saved in `keycloak_repos.json`.
+
+## Expected Output Format
+
+```json
+[
+  {
+    "project_name": "project-name",
+    "repository_url": "https://gl.webmonitorx.ru/project-name",
+    "keycloak_files": ["path/to/config.yml", "path/to/application.properties"],
+    "file_urls": ["https://gl.webmonitorx.ru/project-name/-/blob/main/path/to/config.yml", "https://gl.webmonitorx.ru/project-name/-/blob/main/path/to/application.properties"]
+  }
+]
+```
+
+## Troubleshooting
+
+If you encounter access issues:
+1. Verify the GitLab token is valid and has appropriate permissions
+2. Check that the GitLab URL is correct
+3. Ensure the network connection allows access to the GitLab instance
+4. Verify that the projects are accessible with the provided token
