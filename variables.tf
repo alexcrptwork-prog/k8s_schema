@@ -15,3 +15,9 @@ variable "yc_token" {
   type        = string
   sensitive   = true
 }
+
+variable "service_account_name" {
+  description = "Имя сервисного аккаунта для audit trails и логирования"
+  type        = string
+  default     = "audit-trail-sa"
+}
