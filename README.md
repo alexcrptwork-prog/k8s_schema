@@ -8,6 +8,8 @@
 
 - `yandex_audit_trails_trail` - основной ресурс аудита, который отслеживает все события в облаке и папке
 - `yandex_logging_group` - группа логов для хранения данных аудита
+- `yandex_iam_service_account` - сервисный аккаунт с правами на запись в хранилище аудита и логов
+- `yandex_resourcemanager_folder_iam_binding` - привязки IAM ролей для доступа к хранилищу аудита и логов
 
 Audit Trail будет отслеживать:
 - Все события над объектами в облаке wmx
@@ -21,6 +23,7 @@ Audit Trail будет отслеживать:
 - `cloud_id` - ID облака Yandex Cloud
 - `folder_id` - ID папки Yandex Cloud
 - `yc_token` - OAuth токен для аутентификации в Yandex Cloud
+- `service_account_name` - Имя сервисного аккаунта для audit trails и логирования
 
 ## Использование
 
@@ -35,3 +38,7 @@ Audit Trail будет отслеживать:
 - `audit_trail_name` - Имя созданного audit trail
 - `log_group_id` - ID группы логов для аудита
 - `log_group_name` - Имя группы логов для аудита
+- `service_account_id` - ID созданного сервисного аккаунта
+- `service_account_name` - Имя созданного сервисного аккаунта
+- `static_access_key_id` - ID статического ключа доступа
+- `static_access_key_secret` - Секрет статического ключа доступа
